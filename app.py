@@ -20,6 +20,7 @@ api = Api(app)
 
 # database initialisation
 def init_db():
+    """Create database and table 'catalog'"""
     with app.app_context():
         db = get_db()
         with app.open_resource('db/schema.sql', mode='r') as f:
@@ -29,13 +30,14 @@ def init_db():
 
 @app.cli.command("init-db")
 def init_db_command():
-    """Clear existing data and create new tables."""
+    """Call method init_db() by command 'flask init-db'"""
     init_db()
     click.echo("Initialized the database.")
 
 
 @app.cli.command("reset-table")
 def reset_table():
+    """Clear existing data and create new table by command 'flask reset-table'"""
     cur = get_db().cursor()
     cur.execute("DROP TABLE IF EXISTS `catalog`")
     init_db()
@@ -43,6 +45,7 @@ def reset_table():
 
 @app.teardown_appcontext
 def close_connection(exception):
+    """Commit db changes and close connection after end request"""
     db = getattr(g, '_database', None)
     if db is not None:
         db.commit()
@@ -50,6 +53,8 @@ def close_connection(exception):
 
 
 def get_db():
+    """Establishes a connection with database
+        :return sqlite3.Connection object"""
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(app.config['DATABASE'])
@@ -60,6 +65,8 @@ def get_db():
 class AddCourse(Resource):
     @valid_dates
     def post(self):
+        """Adds the course to database"""
+
         query = """INSERT INTO `catalog` (course, start_date, end_date, num_of_lecture)
             VALUES (:course, :start_date, :end_date, :num_of_lecture)"""
         cur = get_db().cursor()
@@ -69,6 +76,8 @@ class AddCourse(Resource):
 
 class GetCourse(Resource):
     def get(self):
+        """Returns the course by ID"""
+
         query = "SELECT * FROM `catalog` WHERE id = :id"
         cur = get_db().cursor()
         res = cur.execute(query, request.json).fetchone()
@@ -79,6 +88,8 @@ class GetCourse(Resource):
 class GetCourses(Resource):
 
     def get(self):
+        """Returns all courses from the database"""
+
         query = "SELECT course FROM `catalog`"
         cur = get_db().cursor()
         res = cur.execute(query)
@@ -90,11 +101,14 @@ class GetFilteredCourses(Resource):
 
     @valid_dates
     def get(self):
+        """Returns all courses that match the specified name
+         and are in the specified date range"""
 
         # filtering by name
         query = "SELECT id, start_date, end_date FROM `catalog` WHERE course LIKE :course"
         cur = get_db().cursor()
         res = cur.execute(query, {'course': request.json.get('course')})
+
         # ids of courses that are included in the specified range
         filtered_ids = []
         for item in res:
@@ -116,6 +130,8 @@ class GetFilteredCourses(Resource):
 class SetAttribute(Resource):
 
     def put(self):
+        """Update the specified course field by ID"""
+
         attribute = request.json.get('attribute')
         value = request.json.get('value')
         cur = get_db().cursor()
@@ -142,6 +158,8 @@ class SetAttribute(Resource):
 class DeleteCourse(Resource):
 
     def delete(self):
+        """Delete the course by ID"""
+
         cur = get_db().cursor()
         query = "SELECT * FROM `catalog` WHERE id = :id"
         res = cur.execute(query, {'id': request.json.get('id')}).fetchone()
@@ -161,4 +179,4 @@ api.add_resource(SetAttribute, '/set-attribute', methods=['PUT'])
 api.add_resource(DeleteCourse, '/delete-course', methods=['DELETE'])
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

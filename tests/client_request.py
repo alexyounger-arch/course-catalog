@@ -1,5 +1,6 @@
 
 class ClientRequest:
+    """Class to simplify the request"""
 
     @classmethod
     def add_course(cls, client, course, start_date, end_date, num_of_lecture):

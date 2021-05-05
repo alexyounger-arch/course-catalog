@@ -2,7 +2,8 @@ import datetime
 from flask import request
 
 
-def dict_factory(cursor, row):
+def dict_factory(cursor, row) -> dict:
+    """Change format sqlite row to dictionary"""
     d = {}
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
@@ -10,10 +11,12 @@ def dict_factory(cursor, row):
 
 
 def to_date(date: str):
-    return (datetime.datetime.strptime(date, "%d.%m.%Y")).date()
+    """Convert str to datetime.date type. Format YYYY-MM-DD"""
+    return (datetime.datetime.strptime(date, "%Y-%m-%d")).date()
 
 
 def valid_dates(func):
+    """Checks the dates that come from the request for validity"""
 
     def wrapper(*args, **kwargs):
         try:
