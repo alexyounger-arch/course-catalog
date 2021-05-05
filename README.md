@@ -27,23 +27,23 @@
     - **start_date (str)**: the start date of the course in YYYY-MM-DD format;
     - **end_date (str)**: the end date of the course in YYYY-MM-DD format;
     - **num_of_lecture (int)**: the number of lectures.  
-  *Response (dict)*: completion status message.
+  *Response (json)*: completion status message.
 2. Returns the course by ID.  
   *Path:* /get-course  
   *Allowed method:* GET  
    *Required fields:*  
     - **id (int)**: the id of course;  
-  *Response (dict)*: the course with its ID.
+  *Response (json)*: the course with its ID.
 3. Returns all courses from the database.   
   *Path:* /get-courses  
   *Allowed method:* GET  
-  *Response (dict)*: all courses from database.
+  *Response (json)*: all courses from database.
 4. Delete the course by ID.    
   *Path:* /delete-course  
   *Allowed method:* DELETE    
       *Required fields:*  
     - **id (int)**: the id of course;  
-  *Response*: completion status message.
+  *Response (json)*: completion status message.
 5. Update the specified course field by ID  
   *Path:* /set-attribute  
   *Allowed method:* PUT  
@@ -51,12 +51,12 @@
     - **attribute (str)**: the name of the attribute course;
     - **value (str)**: new value for specified attribute;
     - **id (int)**: the id of course;  
-  *Response (dict)*: completion status message.
+  *Response (json)*: completion status message.
 6. Search all courses that match the specified name and are in the specified date range.  
   *Path:* /get-filtered-courses  
   *Allowed methods:* GET  
   *Required fields:*  
     - **course (str)**: the name of course;
     - **start_date (str)**: the start date of the course in YYYY-MM-DD format;
-    - **end_date (str)**: the end date of the course in YYYY-MM-DD format;   
-  *Response (dict)*: courses that match the search criteria.
+    - **end_date (str)**: the end date of the course in YYYY-MM-DD format;  
+  *Response (json)*: courses that match the search criteria.
